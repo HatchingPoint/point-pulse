@@ -2,17 +2,27 @@
 
 :root {
   color-scheme: light dark;
-  font-family: system-ui, sans-serif;
 }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: #f6f5f3;
+/* Nav stack until next @hatchingpoint/point release ships .point-nav */
+.point-layout-sidebar .point-link {
+  display: block;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.375rem;
+  margin-bottom: 0.15rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #141312;
-  }
+.point-layout-sidebar .point-link:hover {
+  background: rgb(255 255 255 / 0.06);
+  text-decoration: none;
+}
+
+.point-layout-sidebar nav + * {
+  display: block;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--point-color-border, #374151);
+  color: var(--point-color-muted, #9ca3af);
+  font-size: 0.875rem;
+  font-weight: 600;
 }
