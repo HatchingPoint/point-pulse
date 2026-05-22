@@ -1,0 +1,30 @@
+{
+  "name": "point-pulse",
+  "private": true,
+  "type": "module",
+  "description": "Greenfield Point app — UI + API entirely in .point, hosted on Vercel.",
+  "scripts": {
+    "check": "point check src/app.point",
+    "dev": "point dev src/app.point --port 3456",
+    "dev:api": "point dev src/app.point --port 3456 --api",
+    "build:point": "point build-ts src/app.point generated/app.ts && point build --production src/app.point generated/app.js && cp generated/app.ts generated/app.tsx",
+    "build:ui": "vite build --config web/vite.config.ts",
+    "build": "point check src/app.point && bun run build:point && bun run build:ui",
+    "serve": "point serve src/app.point --port 3456",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.0"
+  },
+  "devDependencies": {
+    "@hatchingpoint/point": "^0.1.14",
+    "@types/bun": "^1.3.13",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0"
+  }
+}

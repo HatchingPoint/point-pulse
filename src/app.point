@@ -1,0 +1,65 @@
+module PulseApp
+
+record Task
+  id: Text
+  title: Text
+  done: Bool
+
+record Tasks Response
+  tasks: List<Task>
+
+calculation sample tasks
+  output tasks: List<Task>
+  return [{ id: "1", title: "Author in .point", done: true }, { id: "2", title: "Run point check", done: true }, { id: "3", title: "Deploy to Vercel", done: false }]
+
+view pulse nav
+  link "Home" to "/"
+  link "Tasks" to "/tasks"
+  render "Pulse"
+
+view home hero
+  render "Point in a box — UI, API, and routes in one .point file, hosted on Vercel."
+
+view tasks list
+  load data from fetch GET "/api/tasks" field tasks type List<Task>
+  when loading render "Loading tasks..."
+  when error render "Could not load tasks"
+  when empty render "No tasks yet"
+  each task in data render task.title
+
+layout pulse shell
+  slot sidebar render pulse nav()
+  slot main render "Pick a page from the sidebar"
+
+page home page
+  layout pulse shell
+  title "Pulse"
+  description "Greenfield Point app on Vercel"
+  main render home hero()
+
+page tasks page
+  layout pulse shell
+  title "Tasks"
+  description "Served by a Point route action"
+  main render tasks list()
+
+navigation pulse app
+  path "/" page home page
+  path "/tasks" page tasks page
+  bootstrap router
+
+route health check
+  method GET
+  path "/api/health"
+  output response: Text
+  return "ok"
+
+route list tasks
+  method GET
+  path "/api/tasks"
+  output response: Tasks Response
+  return json { tasks: sample tasks() }
+
+command pulse demo
+  output result: Text
+  return "Pulse ready"
