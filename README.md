@@ -6,7 +6,7 @@ Greenfield proof that a **whole app** can live in Point source and ship to **Ver
 - **API** — `route` blocks emit a Fetch handler for Vercel Edge
 - **Deploy** — static Vite bundle + serverless `/api/*`
 
-Live demo: *(add Vercel URL after first deploy)*
+Live demo: https://point-pulse-one.vercel.app/
 
 ## Quick start
 
@@ -19,6 +19,23 @@ bun run dev
 ```
 
 Open http://localhost:5173 — UI on Vite, API on http://localhost:3456.
+
+## Playground pages
+
+All authored in `src/app.point`:
+
+| Page | Point features |
+|------|----------------|
+| `/tasks` | `load data`, fetch routes, lists |
+| `/members` | actions, dynamic `/members/:id`, modals |
+| `/settings` | forms, tabs, checkboxes, modals |
+| `/fortune/:name` | labels + rules |
+| `/pricing` | calculations, discount rules |
+| `/launch` | scoring rules in views |
+| `/orders/:id` | variants + variant labels |
+| `/dice/:sides` | parameterized routes |
+
+API routes: `/api/health`, `/api/tasks`, `/api/members`, `/api/launch/demo`, `/api/launch/risky`, `/api/fortune/:name`, `/api/orders/:id`, `/api/dice/:sides`, `POST /api/echo`.
 
 ## What's in the box
 

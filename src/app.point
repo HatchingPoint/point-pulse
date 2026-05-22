@@ -8,17 +8,260 @@ record Task
 record Tasks Response
   tasks: List<Task>
 
+record Member
+  id: Text
+  name: Text
+  role: Text
+  vibe: Text
+
+record Members Response
+  members: List<Member>
+
+record WorkspaceSettings
+  workspace name: Text
+  notifications enabled: Bool
+  theme: Text
+  seats: Text
+
+record Launch Signals
+  has bundle id: Bool
+  submitted for review: Bool
+  has passing tests: Bool
+  has pretty icon: Bool
+
+record Launch Response
+  profile: Text
+  score: Int
+  status: Text
+
+record PricingInput
+  monthly price: Text
+  seats: Text
+
+record Fortune Response
+  name: Text
+  message: Text
+  luck score: Int
+
+record Order Response
+  id: Text
+  message: Text
+
+record Dice Response
+  sides: Text
+  result: Text
+  flavor: Text
+
+record Echo Body
+  message: Text
+
+record Echo Response
+  ok: Bool
+  echo: Text
+
+variant Order Status
+  Pending
+  Processing
+  Shipped with tracking number: Text
+  Delivered
+  Cancelled with reason: Text
+
 calculation sample tasks
   output tasks: List<Task>
-  return [{ id: "1", title: "Author in .point", done: true }, { id: "2", title: "Run point check", done: true }, { id: "3", title: "Deploy to Vercel", done: false }]
+  return [{ id: "1", title: "Author in .point", done: true }, { id: "2", title: "Run point check", done: true }, { id: "3", title: "Deploy to Vercel", done: true }, { id: "4", title: "Push the language further", done: false }, { id: "5", title: "Add variants and rules for fun", done: false }]
+
+calculation sample members
+  output members: List<Member>
+  return [{ id: "alex", name: "Alex Chen", role: "Owner", vibe: "Ship it" }, { id: "jordan", name: "Jordan Lee", role: "Admin", vibe: "Refactor later" }, { id: "sam", name: "Sam Rivera", role: "Member", vibe: "More tabs" }, { id: "riley", name: "Riley Park", role: "Member", vibe: "Edge cases" }]
+
+calculation demo launch signals
+  output signals: Launch Signals
+  signals is { has bundle id: true, submitted for review: true, has passing tests: true, has pretty icon: true }
+
+calculation risky launch signals
+  output signals: Launch Signals
+  signals is { has bundle id: true, submitted for review: false, has passing tests: false, has pretty icon: true }
+
+calculation annual price
+  input monthly price: Int
+  output annual price: Int
+  annual price is monthly price * 12
+
+calculation pending order
+  output status: Order Status
+  status is Pending
+
+calculation shipped order
+  output status: Order Status
+  status is Shipped with tracking number: "1Z999AA10123456784"
+
+calculation cancelled order
+  output status: Order Status
+  status is Cancelled with reason: "User wanted more Point features first"
+
+calculation launch demo response
+  output response: Launch Response
+  response is { profile: "demo", score: launch readiness(demo launch signals()), status: score status(launch readiness(demo launch signals())) }
+
+calculation launch risky response
+  output response: Launch Response
+  response is { profile: "risky", score: launch readiness(risky launch signals()), status: score status(launch readiness(risky launch signals())) }
+
+calculation fortune response for name
+  input name: Text
+  output response: Fortune Response
+  response is { name: name, message: fortune message(name), luck score: fortune luck(name) }
+
+calculation order response for id
+  input id: Text
+  output response: Order Response
+  response is { id: id, message: order message(order status for id(id)) }
+
+calculation dice response for sides
+  input sides: Text
+  output response: Dice Response
+  response is { sides: sides, result: dice result(sides), flavor: dice flavor(sides) }
+
+label echo response for message
+  input message: Text
+  output response: Echo Response
+  when message == "" return { ok: false, echo: "Say something!" }
+  otherwise return { ok: true, echo: message }
+
+rule launch readiness
+  input signals: Launch Signals
+  output score: Int
+  score starts at 0
+  add 25 when signals.has bundle id
+  add 25 when signals.submitted for review
+  add 25 when signals.has passing tests
+  add 25 when signals.has pretty icon
+  return score
+
+rule subscription discount
+  input seats: Int
+  output percent: Int
+  percent starts at 0
+  add 10 when seats >= 3
+  add 10 when seats >= 7
+  add 5 when seats >= 12
+  return percent
+
+rule fortune luck
+  input name: Text
+  output luck score: Int
+  luck score starts at 42
+  add 57 when name == "point"
+  add 57 when name == "alex"
+  return luck score
+
+label score status
+  input score: Int
+  output Text
+  when score >= 90 return "Launch ready"
+  when score >= 60 return "Almost there"
+  otherwise return "Needs love"
+
+label member greeting
+  input member: Member
+  output Text
+  when member.role == "Owner" return member.name + " runs the show"
+  when member.vibe == "Edge cases" return member.name + " finds the bugs"
+  otherwise return member.name + " — " + member.vibe
+
+label fortune message
+  input name: Text
+  output Text
+  when name == "" return "Whisper a name into the URL bar."
+  when name == "alex" return "Your next deploy will be boring—in a good way."
+  when name == "point" return "The language appreciates your curiosity."
+  when name != "" return "The compiler believes in you, " + name + "."
+  otherwise return "Try /fortune/point"
+
+label monthly price int
+  input raw: Text
+  output Int
+  when raw == "9" return 9
+  when raw == "19" return 19
+  when raw == "29" return 29
+  when raw == "49" return 49
+  otherwise return 12
+
+label pricing summary
+  input draft: PricingInput
+  output Text
+  when draft.monthly price == "" return "Enter a monthly price to see annual math."
+  otherwise return "Annual total from " + draft.monthly price + "/mo · seat discount tier applies for " + draft.seats + " seats"
+
+label pricing annual line
+  input draft: PricingInput
+  output Text
+  when draft.monthly price == "" return ""
+  when draft.monthly price == "9" return "Computed annual price: $108"
+  when draft.monthly price == "19" return "Computed annual price: $228"
+  when draft.monthly price == "29" return "Computed annual price: $348"
+  when draft.monthly price == "49" return "Computed annual price: $588"
+  otherwise return "Computed annual price uses the annual price calculation"
+
+label pricing discount line
+  input draft: PricingInput
+  output Text
+  when draft.seats == "" return ""
+  otherwise return "Team discount percent uses the seats field as input"
+
+label order status for id
+  input id: Text
+  output Order Status
+  when id == "pending" return pending order()
+  when id == "shipped" return shipped order()
+  when id == "cancelled" return cancelled order()
+  otherwise return pending order()
+
+label order message
+  input status: Order Status
+  output Text
+  on Pending return "Your order is warming up."
+  on Shipped with tracking number return "Shipped — track " + tracking number
+  on Cancelled with reason return "Cancelled: " + reason
+  otherwise return "Order in progress"
+
+label dice result
+  input sides: Text
+  output Text
+  when sides == "6" return "4"
+  when sides == "20" return "17"
+  when sides == "100" return "88"
+  otherwise return "?"
+
+label dice flavor
+  input sides: Text
+  output Text
+  when sides == "6" return "A respectable d6 roll."
+  when sides == "20" return "Natural-ish vigor."
+  when sides == "100" return "Chaos, but make it enterprise."
+  otherwise return "Try /dice/6 or /dice/20"
+
+action fetch members
+  output members: List<Member>
+  touches none
+  return sample members()
 
 view pulse nav
   link "Home" to "/"
   link "Tasks" to "/tasks"
-  render "Pulse"
+  link "Members" to "/members"
+  link "Settings" to "/settings"
+  link "Fortune" to "/fortune/point"
+  link "Pricing" to "/pricing"
+  link "Launch lab" to "/launch"
+  link "Orders" to "/orders/shipped"
+  link "Dice d6" to "/dice/6"
+  link "Dice d20" to "/dice/20"
+  render "Pulse playground"
 
 view home hero
-  render "Point in a box — UI, API, and routes in one .point file, hosted on Vercel."
+  render "Point in a box — UI, API, rules, labels, variants, and forms on Vercel."
+  render "Everything below is authored in src/app.point."
 
 view tasks list
   load data from fetch GET "/api/tasks" field tasks type List<Task>
@@ -27,9 +270,70 @@ view tasks list
   when empty render "No tasks yet"
   each task in data render task.title
 
+view members list
+  load data from action fetch members
+  when loading render "Loading members..."
+  when error render "Could not load members"
+  when empty render "No members yet"
+  each member in data render link member.name to "/members/" + member.id
+
+view member detail
+  input id: Text
+  modal "Member spotlight" when id != "" render "Vibes checked for member " + id
+  render "Member profile for " + id
+
+view settings form
+  input settings: WorkspaceSettings
+  input on settings change: Handler<WorkspaceSettings>
+  on change call on settings change
+  form
+  bind field "Workspace name" to settings.workspace name
+  bind checkbox "Email notifications" to settings.notifications enabled
+  bind field "Theme" to settings.theme
+  bind field "Seat count" to settings.seats
+  tabs
+  tab "General" render "Theme: " + settings.theme
+  tab "Billing" render "Seats: " + settings.seats
+  tab "Advanced" render "Discount uses subscription discount rule with seat count"
+  modal "Notifications on" when settings.notifications enabled render "Alerts are live for " + settings.workspace name
+
+view fortune panel
+  input name: Text
+  render "Fortune for " + name
+  render fortune message(name)
+  render "Luck score uses the fortune luck rule"
+
+view pricing panel
+  input draft: PricingInput
+  input on draft change: Handler<PricingInput>
+  on change call on draft change
+  form
+  bind field "Monthly price" to draft.monthly price
+  bind field "Seats" to draft.seats
+  render pricing summary(draft)
+  render pricing annual line(draft)
+  render pricing discount line(draft)
+
+view launch lab
+  render "Demo profile — " + score status(launch readiness(demo launch signals()))
+  render "Demo score is " + score status(launch readiness(demo launch signals()))
+  render "Risky profile — " + score status(launch readiness(risky launch signals()))
+  render "Risky score is " + score status(launch readiness(risky launch signals()))
+
+view order panel
+  input id: Text
+  render "Order " + id
+  render order message(order status for id(id))
+
+view dice panel
+  input sides: Text
+  render "Rolling a d" + sides
+  render "Result: " + dice result(sides)
+  render dice flavor(sides)
+
 layout pulse shell
   slot sidebar render pulse nav()
-  slot main render "Pick a page from the sidebar"
+  slot main render "Pick a playground page from the sidebar."
 
 page home page
   layout pulse shell
@@ -40,12 +344,76 @@ page home page
 page tasks page
   layout pulse shell
   title "Tasks"
-  description "Served by a Point route action"
+  description "Loadable list backed by a Point route"
   main render tasks list()
+
+page members page
+  layout pulse shell
+  title "Members"
+  description "Action-backed list with detail routes"
+  main render members list()
+
+page member detail page
+  layout pulse shell
+  input id: Text
+  title "Member"
+  description "Modal and dynamic segment routing"
+  main render member detail(id)
+
+page settings page
+  layout pulse shell
+  input settings: WorkspaceSettings
+  input on settings change: Handler<WorkspaceSettings>
+  title "Settings"
+  description "Forms, tabs, and modals"
+  main render settings form(settings, on settings change)
+
+page fortune page
+  layout pulse shell
+  input name: Text
+  title "Fortune"
+  description "Labels with branching logic"
+  main render fortune panel(name)
+
+page pricing page
+  layout pulse shell
+  input draft: PricingInput
+  input on draft change: Handler<PricingInput>
+  title "Pricing"
+  description "Calculations and discount rules"
+  main render pricing panel(draft, on draft change)
+
+page launch page
+  layout pulse shell
+  title "Launch lab"
+  description "Rules scored in views and over HTTP"
+  main render launch lab()
+
+page order page
+  layout pulse shell
+  input id: Text
+  title "Orders"
+  description "Variant labels in the UI"
+  main render order panel(id)
+
+page dice page
+  layout pulse shell
+  input sides: Text
+  title "Dice"
+  description "Parameterized routes and labels"
+  main render dice panel(sides)
 
 navigation pulse app
   path "/" page home page
   path "/tasks" page tasks page
+  path "/members" page members page
+  path "/members/:id" page member detail page
+  path "/settings" page settings page
+  path "/fortune/:name" page fortune page
+  path "/pricing" page pricing page
+  path "/launch" page launch page
+  path "/orders/:id" page order page
+  path "/dice/:sides" page dice page
   bootstrap router
 
 route health check
@@ -60,10 +428,56 @@ route list tasks
   output response: Tasks Response
   return json { tasks: sample tasks() }
 
+route list members
+  method GET
+  path "/api/members"
+  output response: Members Response
+  return json { members: sample members() }
+
+route launch demo
+  method GET
+  path "/api/launch/demo"
+  output response: Launch Response
+  return json launch demo response()
+
+route launch risky
+  method GET
+  path "/api/launch/risky"
+  output response: Launch Response
+  return json launch risky response()
+
+route fortune api
+  method GET
+  path "/api/fortune/:name"
+  input name: Text
+  output response: Fortune Response
+  return json fortune response for name(name)
+
+route order api
+  method GET
+  path "/api/orders/:id"
+  input id: Text
+  output response: Order Response
+  return json order response for id(id)
+
+route dice api
+  method GET
+  path "/api/dice/:sides"
+  input sides: Text
+  output response: Dice Response
+  return json dice response for sides(sides)
+
+route echo message
+  method POST
+  path "/api/echo"
+  input body: Echo Body
+  output response: Echo Response
+  return json echo response for message(body.message)
+
 command serve pulse app
   output status: Text
   return "Pulse ready"
 
 command pulse demo
   output result: Text
-  return "Pulse ready"
+  return "Pulse playground ready"

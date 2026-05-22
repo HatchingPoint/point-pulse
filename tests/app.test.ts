@@ -14,5 +14,8 @@ describe("pulse app", () => {
 	test("includes health and tasks API routes", () => {
 		expect(appSource).toContain('path "/api/health"');
 		expect(appSource).toContain('path "/api/tasks"');
+		expect(appSource).toContain('path "/api/fortune/:name"');
+		expect(appSource).toContain("rule launch readiness");
+		expect(appSource).toContain("variant Order Status");
 	});
 });
