@@ -60,6 +60,10 @@ route list tasks
   output response: Tasks Response
   return json { tasks: sample tasks() }
 
+command serve pulse app
+  output status: Text
+  return "Pulse ready"
+
 command pulse demo
   output result: Text
   return "Pulse ready"
