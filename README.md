@@ -20,6 +20,20 @@ bun run dev
 
 Open http://localhost:5173 — UI on Vite, API on http://localhost:3456.
 
+## How it works (Point vs web/)
+
+| Layer | Source | Role |
+|-------|--------|------|
+| **Product logic** | `src/app.point` | Pages, views, routes, rules, labels — all Point |
+| **UI runtime** | `generated/app.tsx` | React router + views emitted by `point build-ts` |
+| **API runtime** | `generated/app.js` | Fetch handler emitted by `point build --production` |
+| **Thin host** | `web/main.tsx` | 7 lines — mounts the generated app |
+| **Vercel adapter** | `api/[[...path]].ts` | Edge function → `createPointRouteFetchHandler()` |
+
+Locally, Vite proxies `/api` to `point dev` on :3456. On Vercel, the Edge handler serves `/api/*`; the UI is static files from `dist/`.
+
+**Note:** Most playground pages run Point logic client-side (labels, rules, forms). Only `/tasks` fetches from `/api/tasks` in the browser — so a broken API rewrite shows up there first.
+
 ## Playground pages
 
 All authored in `src/app.point`:
