@@ -10,7 +10,7 @@
         "react-router-dom": "^7.1.0",
       },
       "devDependencies": {
-        "@hatchingpoint/point": "^0.1.16",
+        "@hatchingpoint/point": "^0.1.17",
         "@types/bun": "^1.3.13",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
@@ -111,7 +111,7 @@
 
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.25.12", "", { "os": "win32", "cpu": "x64" }, "sha512-alJC0uCZpTFrSL0CCDjcgleBXPnCrEAhTBILpeAp7M/OFgoqtAetfBzX0xM00MUsVVPpVjlPuMbREqnZCXaTnA=="],
 
-    "@hatchingpoint/point": ["@hatchingpoint/point@0.1.16", "", { "dependencies": { "yaml": "^2.8.0" }, "bin": { "point": "src/cli.ts" } }, "sha512-ua9zLl+F4YUghTh4xXGIADijtM2yGwykgtv1iG4mLj1G+1CCjdOrptoKH7kpLGBcEyLNSZDaRtE55l3AqBZM2A=="],
+    "@hatchingpoint/point": ["@hatchingpoint/point@0.1.17", "", { "dependencies": { "yaml": "^2.8.0" }, "bin": { "point": "src/cli.ts" } }, "sha512-jwiLgxoMmcztGea63U8gjl14RUr69S/vmpse7Xpz0LQw3rLD5ynQ1B2AwXclNo9K5fww/9/QfFhjHIB7587c1Q=="],
 
     "@jridgewell/gen-mapping": ["@jridgewell/gen-mapping@0.3.13", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.0", "@jridgewell/trace-mapping": "^0.3.24" } }, "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA=="],
 

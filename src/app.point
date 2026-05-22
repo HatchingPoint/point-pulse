@@ -1,5 +1,10 @@
 module PulseApp
 
+theme app theme
+  accent indigo
+  density comfortable
+  radius medium
+
 record Task
   id: Text
   title: Text
